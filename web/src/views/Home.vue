@@ -3,7 +3,6 @@
     <a-layout-sider width="200" style="background: #fff">
       <a-menu
           mode="inline"
-          v-model:selectedKeys="selectedKeys2"
           v-model:openKeys="openKeys"
           :style="{ height: '100%', borderRight: 0 }"
       >
@@ -39,15 +38,34 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      Content
+      <pre>
+        {{ ebooks }}
+      </pre>
     </a-layout-content>
   </a-layout>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'Home',
+  setup() {
+    console.log("setup");
+    const ebooks = ref();
+
+    onMounted(() => {
+      console.log("setup");
+      axios.get("http://localhost:8880/ebook/list?name=Spring").then((response) => {
+        const data = response.data;
+        ebooks.value = data.content
+        console.log(response);
+      });
+    })
+    return {
+      ebooks
+    }
+  }
 });
 </script>
