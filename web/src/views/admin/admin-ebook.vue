@@ -22,11 +22,18 @@
         <template v-slot:action="{ text, record }">
           <a-space size="small">
             <a-button type="primary" @click="edit(record)">
-              编辑
+              Edit
             </a-button>
-            <a-button type="danger">
-              删除
-            </a-button>
+            <a-popconfirm
+                title="It will not be recovered after deletion, are you sure you want to delete it?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="handleDelete(record.id)"
+            >
+              <a-button type="danger">
+                Delete
+              </a-button>
+            </a-popconfirm>
           </a-space>
         </template>
       </a-table>
@@ -52,7 +59,7 @@
         <a-input v-model:value="ebook.category2Id" />
       </a-form-item>
       <a-form-item label="Description">
-        <a-input v-model:value="ebook.desc" type="textarea" />
+        <a-input v-model:value="ebook.description" type="textarea" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -179,6 +186,18 @@ export default defineComponent({
       ebook.value = {};
     };
 
+    const handleDelete = (id: number) => {
+      axios.delete("/ebook/delete/" + id).then((response) => {
+        const data = response.data; // data = commonResp
+        if (data.success) {
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize,
+          });
+        }
+      });
+    };
 
     onMounted(() => {
       handleQuery({
@@ -196,6 +215,8 @@ export default defineComponent({
 
       edit,
       add,
+      handleDelete,
+
       ebook,
       modalVisible,
       modalLoading,
