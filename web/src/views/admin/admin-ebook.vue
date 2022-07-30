@@ -53,7 +53,7 @@
     </a-layout-content>
   </a-layout>
   <a-modal
-      title="电子书表单"
+      title="EbookTable"
       v-model:visible="modalVisible"
       :confirm-loading="modalLoading"
       @ok="handleModalOk"
