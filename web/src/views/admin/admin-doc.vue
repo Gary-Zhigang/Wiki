@@ -73,20 +73,26 @@
       <a-form-item label="Sort">
         <a-input v-model:value="doc.sort" />
       </a-form-item>
+      <a-form-item label="Content">
+        <div id="content"></div>
+      </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
 <script lang="ts">
-import {createVNode, defineComponent, onMounted, ref} from 'vue';
+  import {createVNode, defineComponent, onMounted, ref} from 'vue';
   import axios from 'axios';
   import {message, Modal} from 'ant-design-vue';
   import {Tool} from "@/util/tool";
   import {useRoute} from "vue-router";
   import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
+  // import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+  import E from 'wangeditor'
 
   export default defineComponent({
     name: 'AdminDoc',
+    // components: { Editor, Toolbar },
     setup() {
       const route = useRoute();
       console.log("路由：", route);
@@ -163,6 +169,9 @@ import {createVNode, defineComponent, onMounted, ref} from 'vue';
       const doc = ref({});
       const modalVisible = ref(false);
       const modalLoading = ref(false);
+      const editor = new E('#content');
+
+
       const handleModalOk = () => {
         modalLoading.value = true;
         axios.post("/doc/save", doc.value).then((response) => {
@@ -256,6 +265,9 @@ import {createVNode, defineComponent, onMounted, ref} from 'vue';
 
         // 为选择树添加一个"无"
         treeSelectData.value.unshift({id: 0, name: 'None'});
+        setTimeout(function () {
+          editor.create();
+        }, 100);
       };
 
       /**
@@ -271,7 +283,9 @@ import {createVNode, defineComponent, onMounted, ref} from 'vue';
 
         // 为选择树添加一个"无"
         treeSelectData.value.unshift({id: 0, name: 'None'});
-
+        setTimeout(function () {
+          editor.create();
+        }, 100);
       };
 
       const handleDelete = (id: number) => {
