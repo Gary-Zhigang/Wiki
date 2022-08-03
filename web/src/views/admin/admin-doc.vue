@@ -119,7 +119,7 @@
   import E from 'wangeditor'
 
   export default defineComponent({
-    name: 'AdminDoc',
+    name: 'Doc',
     // components: { Editor, Toolbar },
     setup() {
       const route = useRoute();
