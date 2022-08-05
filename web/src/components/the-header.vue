@@ -1,8 +1,11 @@
 <template>
   <a-layout-header class="header">
     <div class="logo" />
-    <a class="login-menu" @click="showLoginModal">
-      <span> Login</span>
+    <a class="login-menu" v-show="!user.id" @click="showLoginModal">
+      <span>登录</span>
+    </a>
+    <a class="login-menu" v-show="user.id">
+      <span>您好：{{user.name}}</span>
     </a>
     <a-menu
         theme="dark"
@@ -10,32 +13,33 @@
         :style="{ lineHeight: '64px' }"
     >
       <a-menu-item key="/">
-        <router-link to="/">Home</router-link>
+        <router-link to="/">首页</router-link>
       </a-menu-item>
       <a-menu-item key="/admin/user">
-        <router-link to="/admin/user">User Management</router-link>
+        <router-link to="/admin/user">用户管理</router-link>
       </a-menu-item>
       <a-menu-item key="/admin/ebook">
-        <router-link to="/admin/ebook">Ebook Management</router-link>
+        <router-link to="/admin/ebook">电子书管理</router-link>
       </a-menu-item>
       <a-menu-item key="/admin/category">
-        <router-link to="/admin/category">Category Management</router-link>
+        <router-link to="/admin/category">分类管理</router-link>
       </a-menu-item>
       <a-menu-item key="/about">
-        <router-link to="/about">About Us</router-link>
+        <router-link to="/about">关于我们</router-link>
       </a-menu-item>
     </a-menu>
+
     <a-modal
-        title="Login"
+        title="登录"
         v-model:visible="loginModalVisible"
         :confirm-loading="loginModalLoading"
         @ok="login"
     >
       <a-form :model="loginUser" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="Username">
+        <a-form-item label="登录名">
           <a-input v-model:value="loginUser.loginName" />
         </a-form-item>
-        <a-form-item label="Password">
+        <a-form-item label="密码">
           <a-input v-model:value="loginUser.password" type="password" />
         </a-form-item>
       </a-form>
@@ -44,9 +48,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import axios from 'axios';
 import { message } from 'ant-design-vue';
+import store from "@/store";
 
 declare let hexMd5: any;
 declare let KEY: any;
@@ -54,9 +59,13 @@ declare let KEY: any;
 export default defineComponent({
   name: 'the-header',
   setup () {
+    // 登录后保存
+    const user = computed(() => store.state.user);
+
+    // 用来登录
     const loginUser = ref({
       loginName: "test",
-      password: "test"
+      password: "test123"
     });
     const loginModalVisible = ref(false);
     const loginModalLoading = ref(false);
@@ -74,7 +83,10 @@ export default defineComponent({
         const data = response.data;
         if (data.success) {
           loginModalVisible.value = false;
-          message.success("Login successfully！");
+          message.success("登录成功！");
+
+          store.commit("setUser", data.content);
+          console.log("User Id", user.value.id)
         } else {
           message.error(data.message);
         }
@@ -86,7 +98,8 @@ export default defineComponent({
       loginModalLoading,
       showLoginModal,
       loginUser,
-      login
+      login,
+      user
     }
   }
 });
